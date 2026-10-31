@@ -27,16 +27,19 @@ def run_python_file(working_directory: str, file_path: str, args: list[str] | No
         
         completed_process = subprocess.run(command, capture_output=True, text=True, timeout=30)
         
-        output = ""
+        output = []
         if completed_process.returncode != 0:
-            output +=  f"Process exited with code {completed_process.returncode}"
-        if not completed_process.stdout or completed_process.stderr:
-            output += "No output provided"
-        else:
-            if completed_process.stdout:
-                output += f"STDOUT: {completed_process.stdout}"
-            if completed_process.stdout:
-                output += f"STDERR: {completed_process.stderr}"
-        return output
+            output.append(f"Process exited with code {completed_process.returncode}")
+        
+        if not completed_process.stdout and not completed_process.stderr:
+            output.append("No output provided")
+            return "\n".join(output)
+        
+        if completed_process.stdout:
+            output.append(f"STDOUT: {completed_process.stdout}")
+        
+        if completed_process.stderr:
+            output.append(f"STDERR: {completed_process.stderr}")
+        return "\n".join(output)
     except Exception as e:
        return f"Error: executing Python file: {e}"
