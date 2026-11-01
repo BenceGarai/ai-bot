@@ -3,9 +3,9 @@ import sys
 import argparse
 from dotenv import load_dotenv
 from openai import OpenAI
-import json
 from prompts import system_prompt
 from call_function import available_functions, call_function
+from config import MAX_AGENT_ITERATIONS
 
 
 def generate_content(client, messages):
@@ -44,7 +44,7 @@ def main():
     ]
 
     is_verbose = args.verbose
-    for _ in range(20):
+    for _ in range(MAX_AGENT_ITERATIONS):
         response = generate_content(client, messages)
 
         if is_verbose:
