@@ -1,6 +1,24 @@
 import os
 from config import *
 
+schema_get_file_content = {
+    "type": "function",
+    "function": {
+        "name": "get_file_content",
+        "description": f"Retrieves the content (at most {MAX_CHARS} characters) of a specified file within the working directory",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "file_path": {
+                    "type": "string",
+                    "description": "Path to a file to read, relative to the working directory",
+                },
+            },
+            "required": ["file_path"]
+        },
+    },
+}
+
 def get_file_content(working_directory: str, file_path: str) -> str:
     # Check if path is valid
     try:
