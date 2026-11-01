@@ -1,4 +1,5 @@
 import os
+import sys
 import argparse
 from dotenv import load_dotenv
 from openai import OpenAI
@@ -41,21 +42,28 @@ def main():
         {"role": "system", "content": system_prompt},
         {"role": "user", "content": args.user_prompt},
     ]
-    response = generate_content(client, messages)
 
     is_verbose = args.verbose
-    if is_verbose:
-        verbose_output(args.user_prompt, response)
+    for _ in range(20):
+        response = generate_content(client, messages)
 
-    message = response.choices[0].message
-    # Tool calls
-    if not message.tool_calls:
-        print(message.content)
-    else:
-        for tool_call in message.tool_calls:
-            result_message = call_function(tool_call, is_verbose)
-            if result_message["content"] and is_verbose:
-                print(f"-> {result_message['content']}")
+        if is_verbose:
+            verbose_output(args.user_prompt, response)
+
+        message = response.choices[0].message
+        messages.append(message)
+        # Tool calls
+        if not message.tool_calls:
+            print(message.content)
+            return
+        else:
+            for tool_call in message.tool_calls:
+                result_message = call_function(tool_call, is_verbose)
+                messages.append(result_message)
+                if result_message["content"] and is_verbose:
+                    print(f"-> {result_message['content']}")
+
+    sys.exit("Error: Not able to solve within limits")
 
 
 if __name__ == "__main__":
